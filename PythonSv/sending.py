@@ -2,7 +2,7 @@ import socket
 
 UDP_IP = "10.234.2.246"
 UDP_PORT = 5005
-MESSAGE = "Hello, World!"
+MESSAGE = "20"
 
 print "UDP target IP:", UDP_IP
 print "UDP target port:", UDP_PORT
