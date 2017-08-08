@@ -1,2 +1,6 @@
 # Unity Files
 *.cs.meta
+
+# Ansible and Vagrant
+playbook.retry
+.vagrant/

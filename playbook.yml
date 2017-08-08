@@ -1,0 +1,15 @@
+- hosts: all
+  remote_user: vagrant
+  tasks:
+  - name: Install git
+    apt:
+      name: git
+      update_cache: yes
+    become: yes
+  - name: Clone VxLab Repo
+    git: 
+      repo: 'https://bitbucket.org/ipeake/vxlab-baxter.git'
+      dest: '~/baxter-vxlab'
+  - name: Run Setup Script
+    command: "{{ ansible_env.HOME }}/baxter-vxlab/docker/baxter-ros-indigo-setup"
+    become: yes
