@@ -10,6 +10,10 @@ public class Lightsaber : MonoBehaviour {
     private AudioSource audioHum;
     private AudioSource audioClash;
 
+    [SerializeField]
+    private UDPSend udpSendScript;
+    public GameObject network;
+
     public AudioSource AddAudio(AudioClip clip, bool loop, bool playAwake, float vol)
     {
         AudioSource newAudio = gameObject.AddComponent<AudioSource>();
@@ -26,6 +30,8 @@ public class Lightsaber : MonoBehaviour {
     {
         audioHum = AddAudio(clipHum, true, false, 0.5f);
         audioClash = AddAudio(clipClash, false, false, 0.5f);
+        network = GameObject.FindGameObjectWithTag("Network");
+        udpSendScript = network.GetComponent<UDPSend>();
     }
 
     private void Start()
@@ -43,11 +49,14 @@ public class Lightsaber : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Lightsaber")
+        if (other.gameObject.tag == "Lightsaber" || other.gameObject.tag == "Player")
         {
             Debug.Log("Clash!");
             audioClash.Play();
-        } else
+            udpSendScript.sendString("Clash");
+            udpSendScript.sendString(Random.Range(1, 4).ToString());
+        }
+        else
         {
             audioClash.Stop();
         }

@@ -7,6 +7,10 @@ public class LightsaberController : MonoBehaviour {
     private SteamVR_TrackedObject trackedObj;
     private GameObject lightsaber;
     public GameObject lightsaberPrefab;
+    
+    [SerializeField]
+    private UDPSend udpSendScript;
+    public GameObject network;
 
     private SteamVR_Controller.Device Controller
     {
@@ -16,6 +20,7 @@ public class LightsaberController : MonoBehaviour {
     private void Awake()
     {
         trackedObj = GetComponent<SteamVR_TrackedObject>();
+        udpSendScript = network.GetComponent<UDPSend>();
     }
     // Use this for initialization
     void Start () {
@@ -26,5 +31,14 @@ public class LightsaberController : MonoBehaviour {
 	void Update () {
         lightsaber.transform.position = trackedObj.transform.position;
         lightsaber.transform.rotation = trackedObj.transform.rotation * Quaternion.Euler(90, 0, 0);
-	}
+
+        if (Controller.GetHairTriggerDown())
+        {
+            Debug.Log("Trigger");
+            udpSendScript.sendString("Trigger");
+            udpSendScript.sendString(Random.Range(1, 4).ToString());
+        }
+    }
+
+
 }
