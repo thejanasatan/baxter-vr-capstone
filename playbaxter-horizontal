@@ -1,0 +1,7 @@
+#!/bin/bash
+set -xv
+cd ~/haptics_ws
+source init.sh 
+# rosrun baxter_examples test_playback.py -f "~/baxter-movements/baxter-recording"
+
+rosrun baxter_examples vr_playback.py -f ~/baxter-movements/baxter-recording-horizontal.csv
