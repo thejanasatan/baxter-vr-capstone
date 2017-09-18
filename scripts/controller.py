@@ -17,6 +17,8 @@ Geometry messages required for the IKSolver Service
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,
+    Point,
+    Quaternion,
 ) 
 
 from baxter_core_msgs.msg import (
@@ -28,11 +30,16 @@ from sensor_msgs.msg import (
     JointState,
 )
 
+from std_msgs.msg import (
+    Header,
+)
+
 """
 Baxter IK Solver
 """
 from baxter_core_msgs.srv import (
-    SolvePositionIK
+    SolvePositionIK,
+    SolvePositionIKRequest,
 )
 
 import time
@@ -73,7 +80,6 @@ class BaxterNode():
             'right':  rospy.Publisher(
                 self.ik_topics['right'],
                 JointState,
-                queue_size = None,
                 queue_size = 1,
                 tcp_nodelay = True
             )
@@ -84,7 +90,6 @@ class BaxterNode():
             'left': rospy.Publisher(
                 self.comm_topics['left'],
                 JointCommand,
-                queue_size = None,
                 queue_size = 1,
                 tcp_nodelay = True
             ),
@@ -137,25 +142,43 @@ class BaxterNode():
 
     def _consume_control(self):
         try:
+            # IDIOT - YOURE GETTING A DICTIONARY: NOT A STRING SO QUIT TRYING TO SPLIT SHIT
             message = self.control_queue.get_nowait()
+            
+            # IK Solver Message Creation
+	    ik_req = SolvePositionIKRequest()
 
-            # Got the object
-            side = message[0]
-            pose = message[1]
-            rotation = message[2]
+	    hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+	    
+	    pose = {
+	    	'left': PoseStamped(
+			header=hdr,
+			pose=Pose(
+				position=Point(
+					x=0,
+					y=0,
+					z=0,
+				),
+				orientation=Quaternion(
+					x=0,
+					y=0,
+					z=0,
+					w=0,
+				),
+			),
+		),
+	    }
 
-            print('side: ',side)
-            print('pose: ',pose)
-            print('rotation: ', rotation)
-
-        except:
-            return
+	    ikreq.pose_stamp.append(poses['left'])
+	    rospy.wait_for_service(self.ik_topics['left'], 5.0)
+	    resp = self.ik_solvers['left'](ikreq)
+	    self.sprint(resp)
+	except:
+	    return
+	    
 
     def _consume_cancel(self):
         try:
             message = self.cancel_queue.get_nowait()
         except:
             return
-
-    def _solve_ik(self, coords):
-        
