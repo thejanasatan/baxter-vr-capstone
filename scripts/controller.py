@@ -146,35 +146,35 @@ class BaxterNode():
             message = self.control_queue.get_nowait()
             
             # IK Solver Message Creation
-	    ik_req = SolvePositionIKRequest()
+            ik_req = SolvePositionIKRequest()
 
-	    hdr = Header(stamp=rospy.Time.now(), frame_id='base')
-	    
-	    pose = {
-	    	'left': PoseStamped(
-			header=hdr,
-			pose=Pose(
-				position=Point(
-					x=0,
-					y=0,
-					z=0,
-				),
-				orientation=Quaternion(
-					x=0,
-					y=0,
-					z=0,
-					w=0,
-				),
-			),
-		),
-	    }
+            hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+            
+            pose = {
+                'left': PoseStamped(
+                header=hdr,
+                pose=Pose(
+                    position=Point(
+                        x=0,
+                        y=0,
+                        z=0,
+                    ),
+                    orientation=Quaternion(
+                        x=0,
+                        y=0,
+                        z=0,
+                        w=0,
+                    ),
+                ),
+            ),
+            }
 
-	    ikreq.pose_stamp.append(poses['left'])
-	    rospy.wait_for_service(self.ik_topics['left'], 5.0)
-	    resp = self.ik_solvers['left'](ikreq)
-	    self.sprint(resp)
-	except:
-	    return
+            ikreq.pose_stamp.append(poses['left'])
+            rospy.wait_for_service(self.ik_topics['left'], 5.0)
+            resp = self.ik_solvers['left'](ikreq)
+            self.sprint(resp)
+        except:
+            return
 	    
 
     def _consume_cancel(self):
