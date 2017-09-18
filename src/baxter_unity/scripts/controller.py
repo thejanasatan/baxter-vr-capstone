@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from multiprocessing import JoinableQueue, Process
+from multiprocessing import Queue, Process
 
 """
 Baxter Interface classes for easy access to ROS API
@@ -17,7 +17,8 @@ Geometry messages required for the IKSolver Service
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,
-    Header,
+    Point,
+    Quaternion,
 ) 
 
 from baxter_core_msgs.msg import (
@@ -29,11 +30,15 @@ from sensor_msgs.msg import (
     JointState,
 )
 
+from std_msgs.msg import (
+    Header,
+)
+
 """
 Baxter IK Solver
 """
 from baxter_core_msgs.srv import (
-    SolvePositionIK as ik_solver
+    SolvePositionIK
 )
 
 import time
@@ -43,6 +48,8 @@ class BaxterNode():
         self.control_queue = con_queue
         self.cancel_queue = can_queue
         self.node = 'rsdk_baxter_unity'
+
+        self.ik_solvers = {}
 
         self._component_ids = {
             'left': ['left_e0', 'left_e1', 'left_s0', 'left_s1', 'left_w0', 'left_w1', 'left_w2'],
@@ -61,18 +68,18 @@ class BaxterNode():
             'right': '/robot/limb/right/joint_command'
         }
 
-        rospy Publishers for IKService topics
+        # rospy Publishers for IKService topics
         self.ik_publishers = {
             'left': rospy.Publisher(
                 self.ik_topics['left'], 
-                sensor_msgs.msg.JointState, 
-                queue_size = None,
+                JointState, 
+                queue_size = 1,
                 tcp_nodelay = True
             ),
             'right':  rospy.Publisher(
                 self.ik_topics['right'],
-                sensor_msgs.msg.JointState,
-                queue_size = None,
+                JointState,
+                queue_size = 1,
                 tcp_nodelay = True
             )
         }
@@ -81,14 +88,14 @@ class BaxterNode():
         self.comm_publishers = {
             'left': rospy.Publisher(
                 self.comm_topics['left'],
-                baxter_core_msgs.msg.JointCommand,
-                queue_size = None,
+                JointCommand,
+                queue_size = 1,
                 tcp_nodelay = True
             ),
             'right': rospy.Publisher(
                 self.comm_topics['right'],
-                baxter_core_msgs.msg.JointCommand,
-                queue_size = None,
+                JointCommand,
+                queue_size = 1,
                 tcp_nodelay = True
             )
         }
@@ -108,25 +115,57 @@ class BaxterNode():
         robot = RobotEnable()
         robot.enable()
 
+        # Start IK Solver proxy
+        self._start_ik_solver()
+
         rospy.on_shutdown(self.cleanup)
         self.sprint('Node running - Ctrl + C to shutdown')
-        rospy.spin()
         self.sprint('Control Node running...')
         curr_time = time.time()
         while(True):
-            if curr_time - time.time() == -1:
-                curr_time = time.time()
-                self._consume_cancel()
-                self._consume_control()
+            self._consume_cancel()
+            self._consume_control()
+
+    def _start_ik_solver(self):
+        try:
+            # Wait to make sure the services are actually running
+            rospy.wait_for_service('/ExternalTools/left/PositionKinematicsNode/IKService', timeout=2)
+            rospy.wait_for_service('/ExternalTools/right/PositionKinematicsNode/IKService', timeout=2)
+
+            self.ik_solvers = {
+                'left': rospy.ServiceProxy(self.ik_topics['left'], SolvePositionIK, persistent=True),
+                'right': rospy.ServiceProxy(self.ik_topics['right'], SolvePositionIK, persistent=True)
+            }
+        except rospy.ROSException:
+            rospy.logError('IKSolver Services not up or something')
 
     def _consume_control(self):
         try:
-            self.sprint(self.control_queue.get_nowait())
+            # IDIOT - YOURE GETTING A DICTIONARY: NOT A STRING SO QUIT TRYING TO SPLIT SHIT
+            message = self.control_queue.get_nowait()
+            
+            # IK Solver Message Creation
+            postStamped = PoseStamped()
+            
+            pose_string = message['position'].strip('(').strip(')').split(',')
+            rotation_string = message['rotation'].strip('(').strip(')').split(',')
+
+            pose = Pose()
+            pose.position = Point(int(pose_string[0]),int(pose_string[1]),int(pose_string[2]))
+            pose.orientation = Quaternion(int(rotation_string[0]),int(rotation_string[1]),int(rotation_string[2]),int(rotation_string[3]))
+
+            header = Header()
+            header.frame_id = 0
+            
+            ik_resp = self.ik_solvers['left'](header, pose) if message['limb'] == 'left' else self.ik_solvers['right'](header,pose)
+            self.sprint(ik_resp)
+
         except:
             return
 
     def _consume_cancel(self):
         try:
-            self.sprint(self.cancel_queue.get_nowait())
+            # IDIOT - YOURE GETTING A DICTIONARY: NOT A STRING SO QUIT TRYING TO SPLIT SHIT
+            message = self.cancel_queue.get_nowait()
         except:
             return
