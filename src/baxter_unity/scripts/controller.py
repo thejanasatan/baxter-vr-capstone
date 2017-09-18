@@ -156,10 +156,12 @@ class BaxterNode():
 
             header = Header()
             header.frame_id = 0
-            
-            ik_resp = self.ik_solvers['left'](header, pose) if message['limb'] == 'left' else self.ik_solvers['right'](header,pose)
-            self.sprint(ik_resp)
 
+            postStamped.header = header
+            postStamped.pose = pose
+            
+            ik_resp = self.ik_solvers['left'](postStamped) if message['limb'] == 'left' else self.ik_solvers['right'](postStamped)
+            self.sprint(ik_resp)
         except:
             return
 
