@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from multiprocessing import JoinableQueue, Process
+from multiprocessing import Queue, Process
 
 """
 Baxter Interface classes for easy access to ROS API
@@ -43,7 +43,7 @@ class BaxterNode():
         self.cancel_queue = can_queue
         self.node = 'rsdk_baxter_unity'
 
-        self.ik_solver_handlers = {}
+        self.ik_solvers = {}
 
         self._component_ids = {
             'left': ['left_e0', 'left_e1', 'left_s0', 'left_s1', 'left_w0', 'left_w1', 'left_w2'],
@@ -62,18 +62,19 @@ class BaxterNode():
             'right': '/robot/limb/right/joint_command'
         }
 
-        rospy Publishers for IKService topics
+        # rospy Publishers for IKService topics
         self.ik_publishers = {
             'left': rospy.Publisher(
                 self.ik_topics['left'], 
                 JointState, 
-                queue_size = None,
+                queue_size = 1,
                 tcp_nodelay = True
             ),
             'right':  rospy.Publisher(
                 self.ik_topics['right'],
                 JointState,
                 queue_size = None,
+                queue_size = 1,
                 tcp_nodelay = True
             )
         }
@@ -84,12 +85,13 @@ class BaxterNode():
                 self.comm_topics['left'],
                 JointCommand,
                 queue_size = None,
+                queue_size = 1,
                 tcp_nodelay = True
             ),
             'right': rospy.Publisher(
                 self.comm_topics['right'],
                 JointCommand,
-                queue_size = None,
+                queue_size = 1,
                 tcp_nodelay = True
             )
         }
@@ -126,23 +128,32 @@ class BaxterNode():
             rospy.wait_for_service('/ExternalTools/left/PositionKinematicsNode/IKService', timeout=2)
             rospy.wait_for_service('/ExternalTools/right/PositionKinematicsNode/IKService', timeout=2)
 
-            self.ik_solver_handlers = {
-                'left': rospy.ServiceProxy(self.ik_topics['left'], persistent=True),
-                'right': rospy.ServiceProxy(self.ik_topics['right'], persistent=True)
+            self.ik_solvers = {
+                'left': rospy.ServiceProxy(self.ik_topics['left'], SolvePositionIK, persistent=True),
+                'right': rospy.ServiceProxy(self.ik_topics['right'], SolvePositionIK, persistent=True)
             }
-
         except rospy.ROSException:
             rospy.logError('IKSolver Services not up or something')
 
     def _consume_control(self):
         try:
-            self.sprint(self.control_queue.get_nowait())
+            message = self.control_queue.get_nowait()
+
+            # Got the object
+            side = message[0]
+            pose = message[1]
+            rotation = message[2]
+
+            print('side: ',side)
+            print('pose: ',pose)
+            print('rotation: ', rotation)
+
         except:
             return
 
     def _consume_cancel(self):
         try:
-            self.sprint(self.cancel_queue.get_nowait())
+            message = self.cancel_queue.get_nowait()
         except:
             return
 
