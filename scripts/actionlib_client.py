@@ -1,10 +1,32 @@
 import rospy
 import baxter_interface
 import actionlib
+import sys
+
+from control_msgs.msg import (
+    FollowJointTrajectoryAction,
+    FollowJointTrajectoryGoal,
+)
+
+from baxter_interface import (
+    RobotEnable,
+)
+
+from trajectory_msgs.msg import (
+    JointTrajectoryPoint,
+)
 
 class BaxterNode():
   def __init__(self, limb, control_queue, cancel_queue):
     ns = 'robot/limb/' + limb + '/'
+    
+    self.sprint('starting node....')
+    rospy.init_node('rsdk_baxter_unity')
+    
+    robot = RobotEnable()
+    robot.enable()
+
+    rospy.on_shutdown(self.cleanup)
 
     self.control_queue = control_queue
     self.cancel_queue = cancel_queue
@@ -52,22 +74,11 @@ class BaxterNode():
     self._goal.trajectory.joint_names = [limb + '_' + joint for joint in \
       ['s0', 's1', 'e0', 'e1', 'w0', 'w1', 'w2']]
 
-  def cleanup():
+  def cleanup(self):
     self.control_queue = None
     self.cancel_goal = None
 
   def start(self):
-    self.sprint('starting node...')
-    rospy.init_node(self.node)
-
-    # Enable Baxter
-    robot = RobotEnable()
-    robot.enable()
-
-    rospy.on_shutdown(self.cleanup)
-    self.sprint('Node running - Ctrl + C to shutdown')
-    self.sprint('Control Node running...')
-
     while True:
       self.consume_cancel()
       self.consume_control()
@@ -75,7 +86,7 @@ class BaxterNode():
   def sprint(self, message):
     print('[rsdk_baxter_unity] ' + message)
 
-  def consume_control():
+  def consume_control(self):
     try:
       message = self.control_queue.get_nowait()
 
@@ -87,5 +98,5 @@ class BaxterNode():
     except:
       return
 
-  def consume_cancel():
+  def consume_cancel(self):
     return
