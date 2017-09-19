@@ -56,7 +56,7 @@ class BaxterNode():
     point.positions = copy(positions)
     point.time_from_start = rospy.Duration(time)
     self._goal.trajectory.points.append(point)
-    self.sprint('point_added' + self_goal.trajectory.points)
+    self.sprint('point_added' + self_goal.trajectory)
   
   def _run_goal(self):
     self._goal.trajectory.header.stamp = rospy.Time.now()
@@ -107,7 +107,8 @@ class BaxterNode():
         'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
       }
 
-      self._clear_goal()
+      # self._clear_goal()
+      self.sprint("I'm here")
       self._add_point(current_angles, 0.0)
       p1 = positions[self._limb]
       self._add_point(p1, 7.0)
