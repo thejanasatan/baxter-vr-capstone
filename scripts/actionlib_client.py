@@ -16,6 +16,8 @@ from trajectory_msgs.msg import (
     JointTrajectoryPoint,
 )
 
+from rospy import Duration
+
 class BaxterNode():
   def __init__(self, limb, con_queue, can_queue):
     ns = 'robot/limb/' + limb + '/'
@@ -53,8 +55,8 @@ class BaxterNode():
 
   def _add_point(self, positions, time):
     point = JointTrajectoryPoint()
-    point.positions = copy(positions)
-    point.time_from_start = rospy.Duration(time)
+    point.positions = positions
+    point.time_from_start = Duration(time)
     self._goal.trajectory.points.append(point)
     self.sprint('point_added' + self_goal.trajectory)
   
