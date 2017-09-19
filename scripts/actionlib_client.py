@@ -96,8 +96,8 @@ class BaxterNode():
   def consume_control(self):
     try:
       message = self.control_queue.get_nowait()
-      point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
-      orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
+      point = message['position']
+      orientation = message['rotation']
       self.sprint(point)
       self.sprint(orientation)
       # current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
