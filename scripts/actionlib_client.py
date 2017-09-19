@@ -108,7 +108,7 @@ class BaxterNode():
       }
 
       self._clear_goal()
-      self._goal._add_point(current_angles, 0.0)
+      self._add_point(current_angles, 0.0)
       p1 = positions[self._limb]
       self._add_point(p1, 7.0)
       self._add_point([x * 0.75 for x in p1], 9.0)
