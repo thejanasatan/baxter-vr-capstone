@@ -3,6 +3,10 @@ import baxter_interface
 import actionlib
 import sys
 
+from rospy import rostime
+
+from copy import copy
+
 from control_msgs.msg import (
     FollowJointTrajectoryAction,
     FollowJointTrajectoryGoal,
@@ -42,9 +46,9 @@ class BaxterNode():
         FollowJointTrajectoryAction,
     )
     self._goal = FollowJointTrajectoryGoal()
-    self._goal_time_tolerance = rospy.Time(0.1)
+    self._goal_time_tolerance = rostime.Time(0.1)
     self._goal.goal_time_tolerance = self._goal_time_tolerance
-    server_up = self._client.wait_for_server(timeout=rospy.Duration(10.0))
+    server_up = self._client.wait_for_server(timeout=rostime.Duration(10.0))
     if not server_up:
       rospy.logerr("Timed out waiting for Joint Trajectory"
                     " Action Server to connect. Start the action server"
@@ -54,21 +58,27 @@ class BaxterNode():
     self._clear_goal(limb)
 
   def _add_point(self, positions, time):
-    point = JointTrajectoryPoint()
-    point.positions = positions
-    point.time_from_start = Duration(time)
-    self._goal.trajectory.points.append(point)
-    self.sprint('point_added' + self_goal.trajectory)
-  
+    try:
+    	point = JointTrajectoryPoint()
+    	point.positions = copy(positions)
+    	point.time_from_start = rostime.Duration(time)
+    	self.sprint('added')
+	self._goal.trajectory.points.append(point)
+	self.sprint('hello')
+    except:
+	return  
+
   def _run_goal(self):
-    self._goal.trajectory.header.stamp = rospy.Time.now()
+    self.sprint('line 1 %s' % self._goal)
+    self._goal.trajectory.header.stamp = rostime.Time.now()
     self._client.send_goal(self._goal)
 
   def _cancel_goal(self):
     self._client.cancel_goal()
 
   def _wait_for_result(self, timeout=15.0):
-    self._client.wait_for_result(timeout=rospy.Duration(timeout))
+    self._client.wait_for_result(timeout=rostime.Duration(timeout))
+    self.sprint('waited - timedout')
 
   def _result(self):
     return self._client.get_result()
@@ -103,7 +113,7 @@ class BaxterNode():
       # self.sprint(point)
       # self.sprint(orientation)
       current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
-      # self.sprint(current_angles)
+      self.sprint(current_angles)
       positions = {
         'left':  [-0.11, -0.62, -1.15, 1.32,  0.80, 1.27,  2.39],
         'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
