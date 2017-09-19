@@ -95,11 +95,11 @@ class BaxterNode():
 
   def consume_control(self):
     try:
-      self.sprint(self.control_queue.get_nowait())
-      # point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
-      # orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
-      # self.sprint(point)
-      # self.sprint(orientation)
+      message = self.control_queue.get_nowait()
+      point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
+      orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
+      self.sprint(point)
+      self.sprint(orientation)
       # current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
       # self.sprint(current_angles)
       # positions = {
