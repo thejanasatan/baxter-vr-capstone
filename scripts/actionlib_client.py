@@ -71,6 +71,7 @@ class BaxterNode():
   def _run_goal(self):
     self.sprint('line 1 %s' % self._goal)
     self._goal.trajectory.header.stamp = rostime.Time.now()
+    self._goal.trajectory.header.frame_id = 'base'
     self._client.send_goal(self._goal)
 
   def _cancel_goal(self):
