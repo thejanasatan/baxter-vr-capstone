@@ -38,8 +38,7 @@ from std_msgs.msg import (
 Baxter IK Solver
 """
 from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
+    SolvePositionIK
 )
 
 import time
@@ -146,39 +145,36 @@ class BaxterNode():
             message = self.control_queue.get_nowait()
             
             # IK Solver Message Creation
-            ik_req = SolvePositionIKRequest()
-
-            hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+            postStamped = PoseStamped()
             
-            pose = {
-                'left': PoseStamped(
-                header=hdr,
-                pose=Pose(
-                    position=Point(
-                        x=0,
-                        y=0,
-                        z=0,
-                    ),
-                    orientation=Quaternion(
-                        x=0,
-                        y=0,
-                        z=0,
-                        w=0,
-                    ),
-                ),
-            ),
-            }
+            pose_string = message['position'].strip('(').strip(')').split(',')
+            rotation_string = message['rotation'].strip('(').strip(')').split(',')
 
-            ikreq.pose_stamp.append(poses['left'])
-            rospy.wait_for_service(self.ik_topics['left'], 5.0)
-            resp = self.ik_solvers['left'](ikreq)
-            self.sprint(resp)
+            pose = Pose()
+            pose.position = Point(int(pose_string[0]),int(pose_string[1]),int(pose_string[2]))
+            pose.orientation = Quaternion(int(rotation_string[0]),int(rotation_string[1]),int(rotation_string[2]),int(rotation_string[3]))
+
+            header = Header()
+            header.frame_id = 0
+<<<<<<< HEAD
+
+            postStamped.header = header
+            postStamped.pose = pose
+            
+            ik_resp = self.ik_solvers['left'](postStamped) if message['limb'] == 'left' else self.ik_solvers['right'](postStamped)
+            self.sprint(ik_resp)
+=======
+            
+            ik_resp = self.ik_solvers['left'](header, pose) if message['limb'] == 'left' else self.ik_solvers['right'](header,pose)
+            self.sprint(ik_resp)
+
+>>>>>>> 1628d39... ikservice?
         except:
             return
-	    
 
     def _consume_cancel(self):
         try:
+            # IDIOT - YOURE GETTING A DICTIONARY: NOT A STRING SO QUIT TRYING TO SPLIT SHIT
             message = self.cancel_queue.get_nowait()
         except:
             return
