@@ -20,6 +20,8 @@ class BaxterNode():
   def __init__(self, limb, control_queue, cancel_queue):
     ns = 'robot/limb/' + limb + '/'
     
+    self._limb = limb
+
     self.sprint('starting node....')
     rospy.init_node('rsdk_baxter_unity')
     
@@ -77,6 +79,7 @@ class BaxterNode():
   def cleanup(self):
     self.control_queue = None
     self.cancel_goal = None
+    self._cancel_goal()
 
   def start(self):
     while True:
@@ -90,11 +93,24 @@ class BaxterNode():
     try:
       message = self.control_queue.get_nowait()
 
-      point = message['position']
-      orientation = message['rotation']
+      point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
+      orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
 
-      self.sprint(point)
+      current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
 
+      positions = {
+        'left':  [-0.11, -0.62, -1.15, 1.32,  0.80, 1.27,  2.39],
+        'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
+      }
+
+      self._clear_goal()
+      self._goal._add_point(current_angles)
+      p1 = positions[self._limb]
+      self._add_point(p1, 3.0)
+      self._add_point([x * 0.75 for x in p1], 9.0)
+      self._add_point([x * 1.25 for x in p1], 12.0)
+      self._run_goal()
+      self._wait_for_result()
     except:
       return
 
