@@ -57,6 +57,7 @@ class BaxterNode():
     point.time_from_start = rospy.Duration(time)
     self._goal.trajectory.points.append(point)
     self.sprint('point_added' + self_goal.trajectory.points)
+  
   def _run_goal(self):
     self._goal.trajectory.header.stamp = rospy.Time.now()
     self._client.send_goal(self._goal)
@@ -80,6 +81,8 @@ class BaxterNode():
     self.control_queue = None
     self.cancel_goal = None
     self._cancel_goal()
+    rospy.signal_shutdown('Shutting down....')
+    sys.Exit(0)
 
   def start(self):
     while True:
@@ -111,7 +114,7 @@ class BaxterNode():
       self._add_point([x * 0.75 for x in p1], 9.0)
       self._add_point([x * 1.25 for x in p1], 12.0)
       self._run_goal()
-      self._wait_for_result()
+      self._wait_for_result(timeout=10.0)
     except:
       return
 

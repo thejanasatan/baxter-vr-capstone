@@ -36,6 +36,7 @@ class WSServer():
       'goal': message[1]
     }
     self.cancel_queue.put_nowait(message)
+    self.sprint('message passed')
 
   def _publish_command(self, message):
     message = {
@@ -46,3 +47,4 @@ class WSServer():
         'rotation': message[2]
     }
     self.control_queue.put_nowait(message)
+    self.sprint('message passed')
