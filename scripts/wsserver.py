@@ -45,4 +45,4 @@ class WSServer():
         'position': message[1],
         'rotation': message[2]
     }
-    self.control_queue.put(message)
+    self.control_queue.put_nowait(message)

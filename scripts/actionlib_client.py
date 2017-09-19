@@ -56,7 +56,7 @@ class BaxterNode():
     point.positions = copy(positions)
     point.time_from_start = rospy.Duration(time)
     self._goal.trajectory.points.append(point)
-
+    self.sprint('point_added' + self_goal.trajectory.points)
   def _run_goal(self):
     self._goal.trajectory.header.stamp = rospy.Time.now()
     self._client.send_goal(self._goal)
@@ -92,12 +92,13 @@ class BaxterNode():
   def consume_control(self):
     try:
       message = self.control_queue.get_nowait()
-
+      self.sprint(message + '\n')
       point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
       orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
-
+      self.sprint(point)
+      self.sprint(orientation)
       current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
-
+      self.sprint(current_angles)
       positions = {
         'left':  [-0.11, -0.62, -1.15, 1.32,  0.80, 1.27,  2.39],
         'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
