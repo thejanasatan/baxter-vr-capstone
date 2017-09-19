@@ -17,7 +17,7 @@ from trajectory_msgs.msg import (
 )
 
 class BaxterNode():
-  def __init__(self, limb, control_queue, cancel_queue):
+  def __init__(self, limb, con_queue, can_queue):
     ns = 'robot/limb/' + limb + '/'
     
     self._limb = limb
@@ -30,8 +30,8 @@ class BaxterNode():
 
     rospy.on_shutdown(self.cleanup)
 
-    self.control_queue = control_queue
-    self.cancel_queue = cancel_queue
+    self.control_queue = con_queue
+    self.cancel_queue = can_queue
 
     self._limb_interface = baxter_interface.limb.Limb(limb)
 
@@ -82,9 +82,10 @@ class BaxterNode():
     self.cancel_goal = None
     self._cancel_goal()
     rospy.signal_shutdown('Shutting down....')
-    sys.Exit(0)
+    sys.exit(0)
 
   def start(self):
+    self.sprint('process started....')
     while True:
       self.consume_cancel()
       self.consume_control()
@@ -119,4 +120,8 @@ class BaxterNode():
       return
 
   def consume_cancel(self):
-    return
+    try:
+      self.cancel_queue.get_nowait()
+      self._cancel_goal()
+    except:
+      return
