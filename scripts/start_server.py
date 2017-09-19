@@ -4,7 +4,7 @@ import argparse, sys
 from multiprocessing import Process, Queue
 
 import wsserver
-import controller
+import actionlib_client
 
 def start_node_server(host, port):
     
@@ -17,7 +17,7 @@ def start_node_server(host, port):
     ws_process = Process(target=ws.listen, args=())
     
     # setup concurrent process for control_node
-    cn = controller.BaxterNode(control_queue, cancel_queue)
+    cn = controller.BaxterNode('left', control_queue, cancel_queue)
     cn_process = Process(target=cn.start, args=())
 
     cn_process.start()
