@@ -100,21 +100,21 @@ class BaxterNode():
       orientation = message['rotation']
       self.sprint(point)
       self.sprint(orientation)
-      # current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
-      # self.sprint(current_angles)
-      # positions = {
-      #   'left':  [-0.11, -0.62, -1.15, 1.32,  0.80, 1.27,  2.39],
-      #   'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
-      # }
+      current_angles = [self._limb_interface.joint_angle(joint) for joint in self._limb_interface.joint_names()]
+      self.sprint(current_angles)
+      positions = {
+        'left':  [-0.11, -0.62, -1.15, 1.32,  0.80, 1.27,  2.39],
+        'right':  [0.11, -0.62,  1.15, 1.32, -0.80, 1.27, -2.39],
+      }
 
-      # self._clear_goal()
-      # self._goal._add_point(current_angles)
-      # p1 = positions[self._limb]
-      # self._add_point(p1, 3.0)
-      # self._add_point([x * 0.75 for x in p1], 9.0)
-      # self._add_point([x * 1.25 for x in p1], 12.0)
-      # self._run_goal()
-      # self._wait_for_result(timeout=10.0)
+      self._clear_goal()
+      self._goal._add_point(current_angles)
+      p1 = positions[self._limb]
+      self._add_point(p1, 3.0)
+      self._add_point([x * 0.75 for x in p1], 9.0)
+      self._add_point([x * 1.25 for x in p1], 12.0)
+      self._run_goal()
+      self._wait_for_result(timeout=10.0)
     except:
       return
 
