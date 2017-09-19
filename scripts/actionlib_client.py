@@ -91,12 +91,11 @@ class BaxterNode():
       self.consume_control()
 
   def sprint(self, message):
-    print('[rsdk_baxter_unity] ' + message)
+    print('[rsdk_baxter_unity] %s' % message)
 
   def consume_control(self):
     try:
-      message = self.control_queue.get_nowait()
-      self.sprint(message + '\n')
+      self.sprint(self.control_queue.get_nowait())
       # point = (float(coord) for coords in message['position'].strip('(').strip(')').split(','))
       # orientation = (float(coord) for coords in message['rotation'].strip('(').strip(')').split(','))
       # self.sprint(point)
