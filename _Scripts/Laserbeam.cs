@@ -7,7 +7,8 @@ public class Laserbeam : MonoBehaviour {
     [SerializeField] GameObject player;
     public GameObject origin;
     [SerializeField] Vector3 target;
-    float speed = 150f;
+    //float speed = 150f;
+    float speed = 50f;
     bool isReflected;
 
 	// Use this for initialization

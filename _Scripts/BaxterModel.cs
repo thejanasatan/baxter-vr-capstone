@@ -28,7 +28,7 @@ public class BaxterModel : MonoBehaviour {
         Vector3 targetPostition = new Vector3(lookAt.transform.position.x,
                                        this.transform.position.y,
                                        lookAt.transform.position.z);
-        this.transform.LookAt(targetPostition);
+        //this.transform.LookAt(targetPostition);
 
         if (!isShooter)
             BaxterAnimation();
@@ -46,23 +46,23 @@ public class BaxterModel : MonoBehaviour {
         Vector3 vDir = (transform.position - prevLoc) / Time.deltaTime;
         if (vDir.x > 0.5f)
         {
-            Debug.Log("Right");
+            //Debug.Log("Right");
             //animation.Play("Side Walk");
         }
         else if (vDir.x < -0.5f)
         {
-            Debug.Log("Left");
+            //Debug.Log("Left");
             //animation.Play("Side Walk");
         }
 
         if (vDir.z > 0.5f)
         {
-            Debug.Log("Forward");
+            //Debug.Log("Forward");
             //animation.Play("Walk");
         }
         else if (vDir.z < -0.5f)
         {
-            Debug.Log("Back");
+            //Debug.Log("Back");
             //animation.Play("Walk");
         }
 
