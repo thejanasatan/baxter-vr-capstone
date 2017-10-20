@@ -24,11 +24,14 @@ public class BaxterModel : MonoBehaviour {
         {
             Vector3 modelPos = new Vector3(targetFollow.transform.position.x, /*targetFollow.transform.position.y - 1.48f*/0, targetFollow.transform.position.z);
             transform.position = modelPos;
+
+            transform.parent = targetFollow.transform;
         }
         Vector3 targetPostition = new Vector3(lookAt.transform.position.x,
                                        this.transform.position.y,
                                        lookAt.transform.position.z);
         //this.transform.LookAt(targetPostition);
+        
 
         if (!isShooter)
             BaxterAnimation();

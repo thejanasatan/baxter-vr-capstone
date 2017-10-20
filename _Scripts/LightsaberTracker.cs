@@ -23,10 +23,18 @@ public class LightsaberTracker : MonoBehaviour {
     // Use this for initialization
     void Start () {
         lightsaber = Instantiate(lightsaberPrefab);
+        SetupLightsaber();
+    }
+
+    public void SetupLightsaber()
+    {
         lightsaber.transform.rotation = Quaternion.Euler(-90, 0, 0);
         lightsaber.transform.SetParent(gameObject.transform);
         lightsaber.GetComponentInChildren<Lightsaber>().isPlayerController = isPlayerController;
-
+        if (!isPlayerController)
+        {
+            //gameObject.GetComponentInChildren<GameObject>().GetComponentInChildren<GameObject>()
+        }
     }
 	
 	// Update is called once per frame

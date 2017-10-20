@@ -38,23 +38,23 @@ public class UDPSend : MonoBehaviour
         init();
     }
 
-    void OnGUI()
-    {
-        Rect rectObj = new Rect(40, 380, 200, 400);
-        GUIStyle style = new GUIStyle();
-        style.alignment = TextAnchor.UpperLeft;
-        GUI.Box(rectObj, "# UDPSend-Data\n" + IP + " " + port + " #\n"
-                    + "shell> nc -lu 127.0.0.1  " + port + " \n"
-                , style);
+    //void OnGUI()
+    //{
+    //    Rect rectObj = new Rect(40, 380, 200, 400);
+    //    GUIStyle style = new GUIStyle();
+    //    style.alignment = TextAnchor.UpperLeft;
+    //    GUI.Box(rectObj, "# UDPSend-Data\n" + IP + " " + port + " #\n"
+    //                + "shell> nc -lu 127.0.0.1  " + port + " \n"
+    //            , style);
 
-        // send message
-        strMessage = GUI.TextField(new Rect(40, 450, 140, 20), strMessage);
-        if (GUI.Button(new Rect(190, 450, 40, 20), "Send"))
-        {
-            //sendString(strMessage + "\n");
-            setIP(strMessage);
-        }
-    }
+    //    // send message
+    //    strMessage = GUI.TextField(new Rect(40, 450, 140, 20), strMessage);
+    //    if (GUI.Button(new Rect(190, 450, 40, 20), "Send"))
+    //    {
+    //        //sendString(strMessage + "\n");
+    //        setIP(strMessage);
+    //    }
+    //}
 
     public void init()
     {

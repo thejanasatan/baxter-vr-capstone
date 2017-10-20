@@ -81,9 +81,9 @@ public class Lightsaber : MonoBehaviour {
             Debug.Log("Clash!");
             audioClash.Play();
             UDPScript.sendString("clash");
-            UDPScript.sendString("clash");
+            //UDPScript.sendString("clash");
             //UDPScript.sendString(Random.Range(1, 4).ToString());
-            baxter.GetComponent<BaxterController>().SendBaxterMessage(0);
+            //baxter.GetComponent<BaxterController>().SendBaxterMessage(0);
             //baxterController.SendBaxterMessage(Random.Range(0, 3));
         }
         else

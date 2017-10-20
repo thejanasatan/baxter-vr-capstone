@@ -32,6 +32,7 @@ public class PlayerArea : MonoBehaviour {
         if (other.tag == "Lightsaber")
         {
             if (!other.GetComponent<Lightsaber>().isPlayerController)
+                //other.GetComponentInParent<GameObject>().GetComponentInParent<GameObject>().GetComponentInParent<LightsaberTracker>().SetupLightsaber();
                 other.GetComponentInParent<AttackSequence>().isAnim = false;
         }
     }

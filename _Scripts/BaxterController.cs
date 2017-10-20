@@ -12,6 +12,9 @@ public class BaxterController : MonoBehaviour {
     private UDPReceive udpReceive;
     public GameObject network;
 
+    public GameObject baxterTracker;
+    public GameObject hmd;
+
     //private Animator anim;
     //private AnimatorStateInfo currentBaseState;
 
@@ -146,8 +149,17 @@ public class BaxterController : MonoBehaviour {
 
     [SerializeField] float posX, posY, posZ, rotX, rotY, rotZ = 0;
 
+    void BaxterLookAt()
+    {
+        float theta = Mathf.Atan((hmd.transform.position.x - baxterTracker.transform.position.x) / (hmd.transform.position.z - baxterTracker.transform.position.z));
+        print("enemy_face_angle(" + theta + ")");
+        udpSend.sendString("enemy_face_angle(" + theta + ")");
+    }
+
     // Update is called once per frame
     void Update () {
+
+        BaxterLookAt();
 
         // Timer
         if (Time.time >= nextUpdate)
@@ -221,8 +233,7 @@ public class BaxterController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            print("Send");
-            UDPScript.sendString("clash");
+            //UDPScript.sendString("clash");
             //SendBaxterMessage(0);
             //udpSend.sendString(ArmMoveCmd("left", new Vector3(posX, posY, posZ), DegreesToQuaternion(new Vector3(rotX, rotY, rotZ))));
             //UDPScript.sendString(Random.Range(1, 4).ToString());
