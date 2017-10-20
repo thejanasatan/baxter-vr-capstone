@@ -78,7 +78,7 @@ public class Lightsaber : MonoBehaviour {
 
         if (collision.gameObject.tag == "Lightsaber" || collision.gameObject.tag == "MainCamera")
         {
-            Debug.Log("Clash!");
+            //Debug.Log("Clash!");
             audioClash.Play();
             UDPScript.sendString("clash");
             //UDPScript.sendString("clash");

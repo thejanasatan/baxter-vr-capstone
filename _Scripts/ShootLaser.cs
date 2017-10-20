@@ -6,11 +6,12 @@ public class ShootLaser : MonoBehaviour {
 
     public List<GameObject> lasers;
     public GameObject laserbeamPrefab;
-    int nextUpdate = 5;
+    int nextUpdate = 10;
 
     // Use this for initialization
     void Start () {
         lasers = new List<GameObject>();
+        nextUpdate = Random.Range(10, 15);
 	}
 	
 	// Update is called once per frame
@@ -18,7 +19,7 @@ public class ShootLaser : MonoBehaviour {
 
         if (Time.time >= nextUpdate)
         {
-            nextUpdate = Mathf.FloorToInt(Time.time) + Random.Range(3, 6);
+            nextUpdate = Mathf.FloorToInt(Time.time) + Random.Range(6, 10);
 
             SpawnLaserbeam();
         }

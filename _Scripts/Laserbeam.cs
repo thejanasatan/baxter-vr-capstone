@@ -8,12 +8,12 @@ public class Laserbeam : MonoBehaviour {
     public GameObject origin;
     [SerializeField] Vector3 target;
     //float speed = 150f;
-    float speed = 50f;
+    float speed = 150f;
     bool isReflected;
 
 	// Use this for initialization
 	void Start () {
-
+        
     }
 	
 	// Update is called once per frame
@@ -35,6 +35,8 @@ public class Laserbeam : MonoBehaviour {
 
         //LaunchProjectile(player.transform.position);
         gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * speed);
+
+        DisableSelf();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -69,5 +71,11 @@ public class Laserbeam : MonoBehaviour {
     {
         target = pos;
         gameObject.transform.LookAt(target);
+    }
+
+    IEnumerator DisableSelf()
+    {
+        yield return new WaitForSeconds(15);
+        gameObject.SetActive(false);
     }
 }

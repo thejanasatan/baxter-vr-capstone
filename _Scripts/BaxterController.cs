@@ -152,7 +152,7 @@ public class BaxterController : MonoBehaviour {
     void BaxterLookAt()
     {
         float theta = Mathf.Atan((hmd.transform.position.x - baxterTracker.transform.position.x) / (hmd.transform.position.z - baxterTracker.transform.position.z));
-        print("enemy_face_angle(" + theta + ")");
+        //print("enemy_face_angle(" + theta + ")");
         udpSend.sendString("enemy_face_angle(" + theta + ")");
     }
 
